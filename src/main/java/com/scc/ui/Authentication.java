@@ -11,7 +11,7 @@ public class Authentication {
         boolean running = true;
 
         while (running) {
-            System.out.println("\n================================================");
+            System.out.println("\n==================================================");
             System.out.println(" SCC-CI LAB & EQUIPMENT RESOURCE TRACKING SYSTEM  ");
             System.out.println("==================================================");
             System.out.println("1. Login");
@@ -37,8 +37,8 @@ public class Authentication {
                         System.out.println("Role: " + role);
 
                         switch (role) {
-                            case "Property Custodian":
-                                System.out.println("Welcome, Property Custodian!");
+                            case "Admin":
+                                System.out.println("Welcome, Admin!");
                                 break;
                             case "Faculty Member":
                                 System.out.println("Welcome, Faculty Member!");
@@ -66,7 +66,7 @@ public class Authentication {
                     String email = sc.nextLine();
 
                     System.out.println("Select Role:");
-                    System.out.println("[1] Property Custodian");
+                    System.out.println("[1] Admin");
                     System.out.println("[2] Faculty Member");
                     System.out.println("[3] Lab Technician");
                     System.out.print("Choose role option: ");
@@ -81,7 +81,7 @@ public class Authentication {
                     String registerRole;
                     switch (roleChoice) {
                         case 1:
-                            registerRole = "Property Custodian";
+                            registerRole = "Admin";
                             break;
                         case 2:
                             registerRole = "Faculty Member";
@@ -105,12 +105,12 @@ public class Authentication {
                     break;
 
                 case "3":
-                    System.out.println("Exiting application. Goodbye!");
+                    System.out.println("Exiting application. Thank you and Goodbye!");
                     running = false;
                     break;
 
                 default:
-                    System.out.println("Invalid choice. Please try again.");
+                    System.out.println("Invalid choice! Please try again.");
             }
         }
     }
