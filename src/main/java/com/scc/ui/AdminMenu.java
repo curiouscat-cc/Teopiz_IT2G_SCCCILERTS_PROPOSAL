@@ -284,6 +284,8 @@ public class AdminMenu {
                 "FROM Borrow_Transactions b JOIN Lab_Equipment e ON b.equipment_id = e.equipment_id " +
                 "WHERE b.status = 'PENDING'";
 
+        List<Integer> pendingIds = new ArrayList<>();
+
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
@@ -291,7 +293,6 @@ public class AdminMenu {
             System.out.printf("%-6s | %-25s | %-18s | %-15s | %-10s%n", "TX ID", "EQUIPMENT NAME", "REQUESTED BY", "DATE", "STATUS");
             System.out.println("--------------------------------------------------------------------------------------------------");
             boolean hasRows = false;
-            List<Integer> pendingIds = new ArrayList<>();
             while (rs.next()) {
                 hasRows = true;
                 int txId = rs.getInt("transaction_id");
@@ -310,18 +311,31 @@ public class AdminMenu {
                 return;
             }
             System.out.println("==================================================================================================");
+        } catch (SQLException e) {
+            System.err.println("Error fetching reservations: " + e.getMessage());
+            return;
+        }
 
-            int txId = Authentication.readIntInput(sc, "Enter Transaction ID to Approve (0 to cancel): ");
-            if (txId == 0) return;
+        int txId = Authentication.readIntInput(sc, "Enter Transaction ID to Approve (0 to cancel): ");
+        if (txId == 0) return;
 
-            String updateSql = "UPDATE Borrow_Transactions SET status = 'APPROVED' WHERE transaction_id = ?";
-            try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
-                updateStmt.setInt(1, txId);
-                updateStmt.executeUpdate();
+        if (!pendingIds.contains(txId)) {
+            System.out.println("-> Error: Invalid Transaction ID or it is not currently pending.");
+            return;
+        }
+
+        String updateSql = "UPDATE Borrow_Transactions SET status = 'APPROVED' WHERE transaction_id = ? AND status = 'PENDING'";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+            updateStmt.setInt(1, txId);
+            int rowsUpdated = updateStmt.executeUpdate();
+            if (rowsUpdated > 0) {
                 System.out.println("-> Success! Reservation approved.");
+            } else {
+                System.out.println("-> Failed to approve reservation.");
             }
         } catch (SQLException e) {
-            System.err.println("Error managing reservations: " + e.getMessage());
+            System.err.println("Error updating reservation: " + e.getMessage());
         }
     }
 
@@ -393,13 +407,12 @@ public class AdminMenu {
             System.out.println("==================================================================================================");
             return;
         }
-        System.out.printf("%-6s | %-18s | %-20s | %-15s | %-10s%n", "ID", "USERNAME", "FULL NAME", "ROLE", "STATUS");
+        System.out.printf("%-6s | %-20s | %-15s | %-12s%n", "ID", "USERNAME", "ROLE", "STATUS");
         System.out.println("--------------------------------------------------------------------------------------------------");
         for (User u : users) {
-            System.out.printf("%-6d | %-18s | %-20s | %-15s | %-10s%n",
+            System.out.printf("%-6d | %-20s | %-15s | %-12s%n",
                     u.id(),
-                    truncate(u.username(), 18),
-                    truncate(u.fullName(), 20),
+                    truncate(u.username(), 20),
                     truncate(u.role(), 15),
                     u.status()
             );
@@ -407,7 +420,6 @@ public class AdminMenu {
         System.out.println("==================================================================================================");
     }
 
-    // Safeguard helper that truncates excessively long text so table borders never break
     private static String truncate(String value, int maxLength) {
         if (value == null) return "";
         if (value.length() <= maxLength) return value;
