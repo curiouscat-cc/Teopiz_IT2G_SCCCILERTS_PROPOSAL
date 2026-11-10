@@ -2,7 +2,7 @@ package com.scc.ui;
 
 import com.scc.Model.User;
 import com.scc.dao.DatabaseConnection;
-import com.scc.dao.UserDao;
+import com.scc.dao.userDao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,15 +14,15 @@ import java.util.Scanner;
 
 public class AdminMenu {
 
-    public static void showMenu(Scanner sc, UserDao userDao, User currentAdmin) {
+    public static void showMenu(Scanner sc, userDao userDao, User currentAdmin) {
         boolean back = false;
 
         while (!back) {
             System.out.println("\n=======================================");
             System.out.println("            ADMIN DASHBOARD            ");
             System.out.println("=======================================");
-            System.out.println("1. Manage Account Registrations (CRUD)");
-            System.out.println("2. Manage Lab Equipment (CRUD)");
+            System.out.println("1. Manage Account Registrations");
+            System.out.println("2. Manage Lab Equipment");
             System.out.println("3. Manage Pending Equipment Reservations");
             System.out.println("4. View Borrow History");
             System.out.println("5. View Monthly Utilization Reports");
@@ -57,7 +57,7 @@ public class AdminMenu {
         }
     }
 
-    private static void manageAccountRegistrationsMenu(Scanner sc, UserDao userDao, User currentAdmin) {
+    private static void manageAccountRegistrationsMenu(Scanner sc, userDao userDao, User currentAdmin) {
         boolean back = false;
         while (!back) {
             System.out.println("\n=======================================");

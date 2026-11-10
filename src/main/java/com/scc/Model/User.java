@@ -1,4 +1,4 @@
-package com.scc.model;
+package com.scc.Model;
 
 public record User(int id, String username, String password, String role, String status) {
     @Override

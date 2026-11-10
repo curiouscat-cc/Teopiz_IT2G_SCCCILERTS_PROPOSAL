@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Scanner;
 
-public class FacultyMenu {
+public class FacultyMemberMenu {
 
     public static void showMenu(Scanner sc, String facultyUsername) {
         boolean back = false;
@@ -47,7 +47,7 @@ public class FacultyMenu {
 
     private static void reserveEquipment(Scanner sc, String facultyUsername) {
         viewAvailableEquipment();
-        int equipmentId = Authentication.readIntInput(sc, "Enter Equipment ID to reserve (0 to cancel): ");
+        int equipmentId = readIntInput(sc, "Enter Equipment ID to reserve (0 to cancel): ");
         if (equipmentId == 0) return;
 
         String borrowDate = LocalDate.now().toString();
@@ -130,7 +130,7 @@ public class FacultyMenu {
 
     private static void reportDamagedEquipment(Scanner sc, String facultyUsername) {
         viewAvailableEquipment();
-        int eqId = Authentication.readIntInput(sc, "Enter Equipment ID experiencing damage (0 to cancel): ");
+        int eqId = readIntInput(sc, "Enter Equipment ID experiencing damage (0 to cancel): ");
         if (eqId == 0) return;
 
         System.out.print("Describe the damage/issue details: ");
@@ -149,6 +149,19 @@ public class FacultyMenu {
             System.out.println("-> Success! Maintenance report logged for technician review.");
         } catch (SQLException e) {
             System.err.println("Error reporting damage: " + e.getMessage());
+        }
+    }
+
+    // Input safeguard helper to safely read integers without crashing
+    private static int readIntInput(Scanner sc, String prompt) {
+        System.out.print(prompt);
+        while (true) {
+            String input = sc.nextLine().trim();
+            try {
+                return Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.print("Invalid input. Please enter a valid number: ");
+            }
         }
     }
 
